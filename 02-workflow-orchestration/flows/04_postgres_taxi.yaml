@@ -25,14 +25,14 @@ variables:
   file: "{{inputs.taxi}}_tripdata_{{inputs.year}}-{{inputs.month}}.csv"
   staging_table: "public.{{inputs.taxi}}_tripdata_staging"
   table: "public.{{inputs.taxi}}_tripdata"
-  data: "{{output.extract.output[inputs.taxi ~ '_tripdata_' ~ inputs.year ~ '-' ~ inputs.month ~ '.csv']}}"
+  data: "{{outputs.extract.outputFiles[inputs.taxi ~ '_tripdata_' ~ inputs.year ~ '-' ~ inputs.month ~ '.csv']}}"
 
 tasks:
   - id: set_label
     type: io.kestra.plugin.core.execution.Labels
     labels:
       file: "{{render(vars.file)}}"
-      taxi: "{{inputs(taxi)}}"
+      taxi: "{{inputs.taxi}}"
 
   - id: extract
     type: io.kestra.plugin.scripts.shell.Commands
