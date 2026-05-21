@@ -32,7 +32,7 @@ tasks:
     type: io.kestra.plugin.core.execution.Labels
     labels:
       file: "{{render(vars.file)}}"
-      taxi: "{{render.vars.taxi}}"
+      taxi: "{{inputs(taxi)}}"
 
   - id: extract
     type: io.kestra.plugin.scripts.shell.Commands
@@ -44,7 +44,7 @@ tasks:
       - wget -qO https://github.com/DataTalksClub/nyc-tlc-data/releases/download/{{inputs.taxi}}/{{render(vars.file)}}.gz | gunzip > {{render(vars.file)}}
 
   - id: if_yellow_taxi
-    type: io.kestra.plugin.core.flow.IF
+    type: io.kestra.plugin.core.flow.If
     condition: "{{inputs.taxi == 'yellow'}}"
     then:
       - id: yellow_create_table
