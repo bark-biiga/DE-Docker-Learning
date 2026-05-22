@@ -252,3 +252,28 @@ tasks:
               S.trip_distance, S.fare_amount, S.extra, S.mta_tax, S.tip_amount, S.tolls_amount, S.ehail_fee,
               S.improvement_surcharge, S.total_amount, S.payment_type, S.trip_type, S.congestion_surcharge
             );
+      
+  - id: purge_files
+    type: io.kestra.plugin.core.storage.PurgeCurrentExecutionFiles
+    description: To avoid cluttering your storage, we will remove the downloaded files
+
+
+pluginDefaults:
+  - type: io.kestra.plugin.jdbc.postgresql
+    values:
+      url: jdbc:postgresql://pgdatabase:5432/ny_taxi
+      username: root
+      password: root
+
+triggers:
+  - id: green_schedule
+    type: io.plugin.core.trigger.Schedule
+    cron: "0 9 1 * *"
+    inputs:
+      taxi: green
+  
+  - id: yellow_schedule
+    type: io.plugin.core.trigger.Schedule
+    cron: "0 10 1 * *"
+    inputs:
+      taxi: yellow
