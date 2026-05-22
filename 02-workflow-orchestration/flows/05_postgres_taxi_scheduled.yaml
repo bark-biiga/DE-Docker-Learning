@@ -9,11 +9,11 @@ concurrency:
   limit: 1
 
 inputs:
-  id: taxi
-  type: SELECT
-  displayName: Select taxi type
-  values: [yellow, green]
-  defaults: yellow
+  - id: taxi
+    type: SELECT
+    displayName: Select taxi type
+    values: [yellow, green]
+    defaults: green
 
 variables:
   file: "{{inputs.taxi}}_tripdata_{{trigger.date | date('yyyy-MM')}}.csv"
@@ -39,7 +39,7 @@ tasks:
 
   - id: if_yellow_taxi
     type: io.kestra.plugin.core.flow.If
-    condition: "{{inputs.taxi=='yellow'}}"
+    condition: "{{inputs.taxi == 'yellow'}}"
     then:
       - id: yellow_create_table
         type: io.kestra.plugin.jdbc.postgresql.Queries
@@ -70,7 +70,7 @@ tasks:
       - id: yellow_create_staging_table
         type: io.kestra.plugin.jdbc.postgresql.Queries
         sql: |
-           CREATE TABLE IF NOT EXISTS {{render(vars.staging_table)}} (
+            CREATE TABLE IF NOT EXISTS {{render(vars.staging_table)}} (
               unique_row_id          text,
               filename               text,
               VendorID               text,
@@ -91,7 +91,7 @@ tasks:
               improvement_surcharge  double precision,
               total_amount           double precision,
               congestion_surcharge   double precision
-          );
+            );
 
 
       - id: yellow_truncate_staging_table
@@ -267,13 +267,13 @@ pluginDefaults:
 
 triggers:
   - id: green_schedule
-    type: io.plugin.core.trigger.Schedule
+    type: io.kestra.plugin.core.trigger.Schedule
     cron: "0 9 1 * *"
     inputs:
       taxi: green
   
   - id: yellow_schedule
-    type: io.plugin.core.trigger.Schedule
+    type: io.kestra.plugin.core.trigger.Schedule
     cron: "0 10 1 * *"
     inputs:
       taxi: yellow
